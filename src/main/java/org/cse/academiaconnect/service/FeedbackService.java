@@ -64,5 +64,28 @@ public class FeedbackService {
     public void deleteFeedback(Long id) {
         Feedback feedback = getFeedbackById(id);
         feedbackRepository.delete(feedback);
+ 
+ 
     }
+
+    @Transactional(readOnly = true)
+public List<Feedback> getFeedbacksByActivity(Long activityId) {
+    return feedbackRepository.findByActivityId(activityId);
+}
+
+@Transactional(readOnly = true)
+public List<Feedback> getFeedbacksByUser(Long userId) {
+    return feedbackRepository.findByUserId(userId);
+}
+
+@Transactional(readOnly = true)
+public boolean hasUserSubmittedFeedback(Long userId, Long activityId) {
+    return feedbackRepository.existsByUserIdAndActivityId(userId, activityId);
+}
+
+@Transactional(readOnly = true)
+public Double getAverageRating(Long activityId) {
+    Double average = feedbackRepository.findAverageRatingByActivityId(activityId);
+    return average == null ? 0.0 : average;
+}
 }

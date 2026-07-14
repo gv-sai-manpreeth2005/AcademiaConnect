@@ -80,19 +80,11 @@
                    <div class="d-grid gap-2">
 
     <a th:href="@{/activities/{id}(id=${activity.id})}"
-       class="btn btn-outline-primary">
+       class="btn btn-primary">
         View Details
     </a>
 
-    <form th:action="@{/activities/register/{id}(id=${activity.id})}"
-          method="post">
 
-        <button type="submit"
-                class="btn btn-success w-100">
-            Register
-        </button>
-
-    </form>
 
 </div>
 

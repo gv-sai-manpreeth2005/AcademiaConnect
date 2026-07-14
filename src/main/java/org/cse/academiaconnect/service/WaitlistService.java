@@ -73,4 +73,46 @@ public class WaitlistService {
         Waitlist waitlist = getWaitlistById(id);
         waitlistRepository.delete(waitlist);
     }
+
+@Transactional(readOnly = true)
+public List<Waitlist> getWaitlistEntriesByUser(Long userId) {
+    return waitlistRepository.findByUserId(userId);
+}
+@Transactional(readOnly = true)
+public boolean isUserWaitlisted(Long userId, Long activityId) {
+    return waitlistRepository.existsByUserIdAndActivityId(userId, activityId);
+}
+
+public void cancelWaitlist(Long waitlistId, Long userId) {
+
+    Waitlist waitlist = getWaitlistById(waitlistId);
+
+    if (!waitlist.getUser().getId().equals(userId)) {
+        throw new IllegalArgumentException(
+                "You are not allowed to cancel this waitlist entry."
+        );
+    }
+
+    Long activityId = waitlist.getActivity().getId();
+
+    waitlistRepository.delete(waitlist);
+    waitlistRepository.flush();
+
+    List<Waitlist> waitingEntries =
+            waitlistRepository
+                    .findByActivityIdAndStatusOrderByQueuePositionAsc(
+                            activityId,
+                            Waitlist.WaitlistStatus.WAITING
+                    );
+
+    for (int i = 0; i < waitingEntries.size(); i++) {
+        waitingEntries.get(i).setQueuePosition(i + 1);
+    }
+
+    waitlistRepository.saveAll(waitingEntries);
+}
+@Transactional(readOnly = true)
+public List<Waitlist> getWaitlistEntriesByActivity(Long activityId) {
+    return waitlistRepository.findByActivityIdOrderByQueuePositionAsc(activityId);
+}
 }

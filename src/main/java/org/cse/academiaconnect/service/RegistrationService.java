@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.cse.academiaconnect.entity.Waitlist;
+import org.cse.academiaconnect.repository.WaitlistRepository;
+
 
 /**
  * Service class managing Registration business logic.
@@ -19,12 +22,18 @@ import java.util.List;
 public class RegistrationService {
 
     private final RegistrationRepository registrationRepository;
+    private final WaitlistRepository waitlistRepository;
     private final ActivityRepository activityRepository;
 
-    public RegistrationService(RegistrationRepository registrationRepository, ActivityRepository activityRepository) {
-        this.registrationRepository = registrationRepository;
-        this.activityRepository = activityRepository;
-    }
+   public RegistrationService(
+        RegistrationRepository registrationRepository,
+        ActivityRepository activityRepository,
+        WaitlistRepository waitlistRepository) {
+
+    this.registrationRepository = registrationRepository;
+    this.activityRepository = activityRepository;
+    this.waitlistRepository = waitlistRepository;
+}
 
     /**
      * Create a Registration.
@@ -84,4 +93,91 @@ public class RegistrationService {
         Registration registration = getRegistrationById(id);
         registrationRepository.delete(registration);
     }
+
+@Transactional(readOnly = true)
+public List<Registration> getRegistrationsByUser(Long userId) {
+
+    return registrationRepository.findByUserId(userId);
+
+}
+
+@Transactional(readOnly = true)
+public boolean isUserRegistered(Long userId, Long activityId) {
+    return registrationRepository.existsByUserIdAndActivityId(userId, activityId);
+}
+
+@Transactional(readOnly = true)
+public boolean isActivityFull(Long activityId) {
+
+    Activity activity = activityRepository.findById(activityId)
+            .orElseThrow(() ->
+                    new EntityNotFoundException(
+                            "Activity not found with ID: " + activityId
+                    ));
+
+    long registrations =
+            registrationRepository.countByActivityIdAndStatus(
+                    activityId,
+                    Registration.RegistrationStatus.REGISTERED
+            );
+
+    return registrations >= activity.getCapacity();
+}
+public void cancelRegistration(Long registrationId, Long userId) {
+
+    Registration registration = getRegistrationById(registrationId);
+
+    if (!registration.getUser().getId().equals(userId)) {
+        throw new IllegalArgumentException(
+                "You are not allowed to cancel this registration."
+        );
+    }
+
+    Long activityId = registration.getActivity().getId();
+
+    registrationRepository.delete(registration);
+    registrationRepository.flush();
+
+    Waitlist nextWaitlistedUser = waitlistRepository
+            .findFirstByActivityIdAndStatusOrderByQueuePositionAsc(
+                    activityId,
+                    Waitlist.WaitlistStatus.WAITING
+            )
+            .orElse(null);
+
+    if (nextWaitlistedUser != null) {
+
+        Registration promotedRegistration = new Registration();
+        promotedRegistration.setUser(nextWaitlistedUser.getUser());
+        promotedRegistration.setActivity(nextWaitlistedUser.getActivity());
+        promotedRegistration.setStatus(
+                Registration.RegistrationStatus.REGISTERED
+        );
+
+        registrationRepository.save(promotedRegistration);
+
+        nextWaitlistedUser.setStatus(
+                Waitlist.WaitlistStatus.CONVERTED
+        );
+
+        waitlistRepository.save(nextWaitlistedUser);
+
+        List<Waitlist> remainingEntries =
+                waitlistRepository
+                        .findByActivityIdAndStatusOrderByQueuePositionAsc(
+                                activityId,
+                                Waitlist.WaitlistStatus.WAITING
+                        );
+
+        for (int i = 0; i < remainingEntries.size(); i++) {
+            remainingEntries.get(i).setQueuePosition(i + 1);
+        }
+
+        waitlistRepository.saveAll(remainingEntries);
+    }
+}
+@Transactional(readOnly = true)
+public List<Registration> getRegistrationsByActivity(Long activityId) {
+    return registrationRepository.findByActivityId(activityId);
+}
 }

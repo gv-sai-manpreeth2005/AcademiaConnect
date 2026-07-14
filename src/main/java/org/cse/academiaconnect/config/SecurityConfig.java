@@ -37,12 +37,24 @@ public class SecurityConfig {
                 )
 
                 .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/login?error=true")
-                        .permitAll()
-                )
+        .loginPage("/login")
+        .loginProcessingUrl("/login")
+        .successHandler((request, response, authentication) -> {
+
+            boolean isOrganizer = authentication.getAuthorities()
+                    .stream()
+                    .anyMatch(authority ->
+                            authority.getAuthority().equals("ROLE_ORGANIZER"));
+
+            if (isOrganizer) {
+                response.sendRedirect("/organizer");
+            } else {
+                response.sendRedirect("/dashboard");
+            }
+        })
+        .failureUrl("/login?error=true")
+        .permitAll()
+)
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")

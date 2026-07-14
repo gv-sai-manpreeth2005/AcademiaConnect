@@ -72,4 +72,7 @@ public class CertificateService {
         Certificate certificate = getCertificateById(id);
         certificateRepository.delete(certificate);
     }
+
+
+
 }

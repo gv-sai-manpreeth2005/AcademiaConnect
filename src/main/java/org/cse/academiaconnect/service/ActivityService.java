@@ -77,4 +77,8 @@ public class ActivityService {
         Activity activity = getActivityById(id);
         activityRepository.delete(activity);
     }
+@Transactional(readOnly = true)
+public List<Activity> getActivitiesByOrganizer(Long organizerId) {
+    return activityRepository.findByOrganizerId(organizerId);
+}
 }

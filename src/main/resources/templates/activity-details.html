@@ -17,6 +17,16 @@
 
 <div class="container py-5">
 
+<div th:if="${successMessage}"
+     class="alert alert-success"
+     th:text="${successMessage}">
+</div>
+
+<div th:if="${errorMessage}"
+     class="alert alert-danger"
+     th:text="${errorMessage}">
+</div>
+
     <div class="card shadow-lg border-0">
 
         <div class="card-body">
@@ -53,9 +63,16 @@
                 Back
             </a>
 
-            <button class="btn btn-success">
-                Register
-            </button>
+            <form th:action="@{/activities/register/{id}(id=${activity.id})}"
+      method="post"
+      class="d-inline">
+
+    <button type="submit"
+            class="btn btn-success">
+        Register
+    </button>
+
+</form>
 
         </div>
 
