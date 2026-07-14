@@ -4,6 +4,7 @@ import org.cse.academiaconnect.service.ActivityService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class HomeController {
@@ -25,16 +26,19 @@ public class HomeController {
         return "activities";
     }
 
-    @GetMapping("/activity")
-    public String activityDetails() {
-        return "activity-details";
-    }
+@GetMapping("/activities/{id}")
+public String activityDetails(@PathVariable Long id,
+                              Model model) {
+
+    model.addAttribute("activity", activityService.getActivityById(id));
+
+    return "activity-details";
+}
 
     @GetMapping("/dashboard")
-    public String userDashboard() {
-        return "dashboard-user";
-    }
-
+public String userDashboard() {
+    return "dashboard";
+}
     @GetMapping("/organizer")
     public String organizerDashboard() {
         return "dashboard-organizer";

@@ -77,9 +77,24 @@
                         <span th:text="${activity.dateTime}"></span>
                     </p>
 
-                    <a class="btn btn-primary w-100">
-                        View Details
-                    </a>
+                   <div class="d-grid gap-2">
+
+    <a th:href="@{/activities/{id}(id=${activity.id})}"
+       class="btn btn-outline-primary">
+        View Details
+    </a>
+
+    <form th:action="@{/activities/register/{id}(id=${activity.id})}"
+          method="post">
+
+        <button type="submit"
+                class="btn btn-success w-100">
+            Register
+        </button>
+
+    </form>
+
+</div>
 
                 </div>
 

@@ -37,41 +37,51 @@
                             Sign in to Academia Connect
                         </p>
 
-                    </div>
+<form th:action="@{/login}" method="post">
 
-                    <form>
+    <div class="mb-3">
 
-                        <div class="mb-3">
+        <label class="form-label">
+            Username
+        </label>
 
-                            <label class="form-label">
-                                Email or Username
-                            </label>
+        <input
+                type="text"
+                name="username"
+                class="form-control"
+                placeholder="Enter Username"
+                required>
 
-                            <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Enter Email or Username">
+    </div>
 
-                        </div>
+    <div class="mb-4">
 
-                        <div class="mb-4">
+        <label class="form-label">
+            Password
+        </label>
 
-                            <label class="form-label">
-                                Password
-                            </label>
+        <input
+                type="password"
+                name="password"
+                class="form-control"
+                placeholder="Enter Password"
+                required>
 
-                            <input
-                                    type="password"
-                                    class="form-control"
-                                    placeholder="Enter Password">
+    </div>
 
-                        </div>
+    <div th:if="${param.error}" class="alert alert-danger">
+        Invalid username or password.
+    </div>
 
-                        <button class="btn btn-primary w-100">
-                            Login
-                        </button>
+    <div th:if="${param.logout}" class="alert alert-success">
+        You have been logged out successfully.
+    </div>
 
-                    </form>
+    <button type="submit" class="btn btn-primary w-100">
+        Login
+    </button>
+
+</form>
 
                     <hr>
 
