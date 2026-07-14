@@ -14,26 +14,99 @@
 
     <h2 class="mb-4">Create New Activity</h2>
 
-    <form th:action="@{/activities/create}" th:object="${activity}" method="post">
+    <form th:action="@{/activities/create}"
+          th:object="${activity}"
+          method="post">
+
+   <div class="mb-3">
+    <label class="form-label">
+        Title <small class="text-muted"></small>
+    </label>
+
+    <input type="text"
+           class="form-control"
+           th:field="*{title}"
+           placeholder="Enter activity title"
+           minlength="3"
+           maxlength="150"
+           required>
+
+    <small class="text-muted">
+        Title must be between 3 and 150 characters.
+    </small>
+</div>
 
         <div class="mb-3">
-            <label>Title</label>
-            <input type="text" class="form-control" th:field="*{title}">
+            <label class="form-label">Description</label>
+            <textarea class="form-control"
+                      rows="4"
+                      th:field="*{description}"></textarea>
         </div>
 
         <div class="mb-3">
-            <label>Description</label>
-            <textarea class="form-control" th:field="*{description}"></textarea>
+            <label class="form-label">Activity Type</label>
+
+            <select class="form-select"
+                    th:field="*{type}">
+
+                <option value="">Select Type</option>
+
+                <option value="WORKSHOP">Workshop</option>
+                <option value="SEMINAR">Seminar</option>
+                <option value="CONFERENCE">Conference</option>
+                <option value="COMPETITION">Competition</option>
+                <option value="GUEST_LECTURE">Guest Lecture</option>
+                <option value="WEBINAR">Webinar</option>
+
+            </select>
         </div>
 
         <div class="mb-3">
-            <label>Location</label>
-            <input type="text" class="form-control" th:field="*{location}">
+            <label class="form-label">Date & Time</label>
+
+            <input type="datetime-local"
+                   class="form-control"
+                   th:field="*{dateTime}">
         </div>
 
         <div class="mb-3">
-            <label>Capacity</label>
-            <input type="number" class="form-control" th:field="*{capacity}">
+            <label class="form-label">Registration Deadline</label>
+
+            <input type="datetime-local"
+                   class="form-control"
+                   th:field="*{registrationDeadline}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Location</label>
+
+            <input type="text"
+                   class="form-control"
+                   th:field="*{location}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Capacity</label>
+
+            <input type="number"
+                   class="form-control"
+                   th:field="*{capacity}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+
+            <select class="form-select"
+                    th:field="*{status}">
+
+                <option value="DRAFT">Draft</option>
+                <option value="UPCOMING">Upcoming</option>
+                <option value="ACTIVE">Active</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="CANCELLED">Cancelled</option>
+
+            </select>
+
         </div>
 
         <button class="btn btn-primary">

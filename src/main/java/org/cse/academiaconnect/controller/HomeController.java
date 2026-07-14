@@ -5,15 +5,27 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.cse.academiaconnect.entity.Activity;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import java.security.Principal;
+import org.cse.academiaconnect.entity.User;
+import org.cse.academiaconnect.repository.UserRepository;
+import org.cse.academiaconnect.dto.CreateActivityRequest;
 
 @Controller
 public class HomeController {
 
     private final ActivityService activityService;
+private final UserRepository userRepository;
 
-    public HomeController(ActivityService activityService) {
-        this.activityService = activityService;
-    }
+    public HomeController(ActivityService activityService,
+                      UserRepository userRepository) {
+
+    this.activityService = activityService;
+    this.userRepository = userRepository;
+}
 
     @GetMapping("/")
     public String home() {
@@ -43,6 +55,15 @@ public String userDashboard() {
     public String organizerDashboard() {
         return "dashboard-organizer";
     }
+@GetMapping("/activities/create")
+public String createActivityPage(Model model) {
+
+    model.addAttribute("activity", new CreateActivityRequest());
+
+    return "create-activity";
+}
+
+
 
     @GetMapping("/certificates")
     public String certificates() {
@@ -58,4 +79,29 @@ public String userDashboard() {
     public String about() {
         return "about";
     }
+
+   @PostMapping("/activities/create")
+public String createActivity(
+        @Valid @ModelAttribute("activity") CreateActivityRequest request,
+        Principal principal) {
+
+    User organizer = userRepository.findByUsername(principal.getName())
+            .orElseThrow();
+
+    Activity activity = new Activity();
+
+    activity.setTitle(request.getTitle());
+    activity.setDescription(request.getDescription());
+    activity.setLocation(request.getLocation());
+    activity.setCapacity(request.getCapacity());
+    activity.setDateTime(request.getDateTime());
+    activity.setRegistrationDeadline(request.getRegistrationDeadline());
+    activity.setType(Activity.ActivityType.valueOf(request.getType()));
+    activity.setStatus(Activity.ActivityStatus.valueOf(request.getStatus()));
+    activity.setOrganizer(organizer);
+
+    activityService.createActivity(activity);
+
+    return "redirect:/activities";
+}
 }
