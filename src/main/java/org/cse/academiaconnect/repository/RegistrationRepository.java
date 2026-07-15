@@ -41,4 +41,6 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
      * Count the number of active/attended registrations for a specific activity.
      */
     long countByActivityIdAndStatus(Long activityId, Registration.RegistrationStatus status);
+
+    long countByActivityOrganizerId(Long organizerId);
 }

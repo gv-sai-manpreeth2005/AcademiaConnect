@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
+import java.time.LocalDate;
+import org.cse.academiaconnect.entity.User;
+import org.cse.academiaconnect.entity.Activity;
 
 /**
  * Service class managing Certificate business logic.
@@ -73,6 +76,49 @@ public class CertificateService {
         certificateRepository.delete(certificate);
     }
 
+@Transactional(readOnly = true)
+public List<Certificate> getCertificatesByUser(Long userId) {
+    return certificateRepository.findByUserId(userId);
+}
 
+@Transactional(readOnly = true)
+public boolean hasCertificate(Long userId, Long activityId) {
+    return certificateRepository.existsByUserIdAndActivityId(userId, activityId);
+}
 
+public Certificate issueCertificate(User user, Activity activity) {
+
+    if (certificateRepository.existsByUserIdAndActivityId(
+            user.getId(),
+            activity.getId())) {
+
+        throw new IllegalArgumentException(
+                "Certificate has already been issued."
+        );
+    }
+
+    Certificate certificate = new Certificate();
+
+    certificate.setUser(user);
+    certificate.setActivity(activity);
+    certificate.setIssueDate(LocalDate.now());
+
+    certificate.setCredentialUrl(
+            "/certificates/verify/"
+                    + user.getId()
+                    + "-"
+                    + activity.getId()
+    );
+
+    return createCertificate(certificate);
+}
+@Transactional(readOnly = true)
+public Certificate getCertificateByCode(String certificateCode) {
+    return certificateRepository.findByCertificateCode(certificateCode)
+            .orElseThrow(() ->
+                    new EntityNotFoundException(
+                            "Certificate not found with code: " + certificateCode
+                    )
+            );
+}
 }

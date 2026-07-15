@@ -25,16 +25,39 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/",
-                                "/login",
-                                "/register",
-                                "/css/**",
-                                "/js/**",
-                                "/images/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
+
+        .requestMatchers(
+                "/",
+                "/login",
+                "/register",
+                "/css/**",
+                "/js/**",
+                "/images/**",
+                "/certificates/verify/**"
+        ).permitAll()
+
+        .requestMatchers(
+                "/organizer/**",
+                "/activities/create",
+                "/organizer/registrations/**"
+        ).hasRole("ORGANIZER")
+
+        .requestMatchers(
+                "/dashboard",
+                "/my-registrations",
+                "/my-waitlist",
+                "/my-certificates",
+                "/activities/*/feedback"
+        ).hasRole("USER")
+
+        .requestMatchers(
+                "/activities",
+                "/activities/**",
+                "/certificates/**"
+        ).authenticated()
+
+        .anyRequest().authenticated()
+)
 
                 .formLogin(form -> form
         .loginPage("/login")

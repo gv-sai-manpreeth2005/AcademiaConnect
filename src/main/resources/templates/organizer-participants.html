@@ -12,6 +12,10 @@
 <body>
 
 <div class="container py-5">
+    <div th:if="${successMessage}"
+     class="alert alert-success"
+     th:text="${successMessage}">
+</div>
 
     <h2 class="mb-2" th:text="${activity.title}">
         Activity
@@ -33,21 +37,75 @@
            class="table table-bordered table-hover">
 
         <thead class="table-dark">
-        <tr>
-            <th>Name</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Status</th>
-        </tr>
+ <tr>
+    <th>Name</th>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Status</th>
+    <th>Attendance</th>
+</tr>
         </thead>
 
         <tbody>
-        <tr th:each="registration : ${registrations}">
-            <td th:text="${registration.user.fullName}"></td>
-            <td th:text="${registration.user.username}"></td>
-            <td th:text="${registration.user.email}"></td>
-            <td th:text="${registration.status}"></td>
-        </tr>
+      <tr th:each="registration : ${registrations}">
+    <td th:text="${registration.user.fullName}"></td>
+    <td th:text="${registration.user.username}"></td>
+    <td th:text="${registration.user.email}"></td>
+
+    <td>
+        <span class="badge"
+              th:classappend="${
+                  registration.status.name() == 'ATTENDED'
+                  ? ' bg-success'
+                  : registration.status.name() == 'ABSENT'
+                  ? ' bg-danger'
+                  : ' bg-primary'
+              }"
+              th:text="${registration.status}">
+        </span>
+    </td>
+
+   <td>
+    <div class="d-flex flex-wrap gap-2">
+
+        <form th:action="@{/organizer/registrations/{id}/attendance(id=${registration.id})}"
+              method="post"
+              class="d-inline">
+
+            <button type="submit"
+                    name="status"
+                    value="ATTENDED"
+                    class="btn btn-sm btn-success">
+                Attended
+            </button>
+        </form>
+
+        <form th:action="@{/organizer/registrations/{id}/attendance(id=${registration.id})}"
+              method="post"
+              class="d-inline">
+
+            <button type="submit"
+                    name="status"
+                    value="ABSENT"
+                    class="btn btn-sm btn-danger">
+                Absent
+            </button>
+        </form>
+
+        <form th:if="${registration.status.name() == 'ATTENDED'}"
+              th:action="@{/organizer/registrations/{id}/certificate(id=${registration.id})}"
+              method="post"
+              class="d-inline">
+
+            <button type="submit"
+                    class="btn btn-sm btn-primary">
+                Issue Certificate
+            </button>
+        </form>
+
+    </div>
+</td>
+</tr>
         </tbody>
 
     </table>
@@ -90,6 +148,6 @@
     </a>
 
 </div>
-
+<div th:replace="~{fragments/chatbot :: chatbot}"></div>
 </body>
 </html>

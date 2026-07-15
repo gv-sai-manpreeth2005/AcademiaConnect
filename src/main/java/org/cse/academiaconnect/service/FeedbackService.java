@@ -88,4 +88,12 @@ public Double getAverageRating(Long activityId) {
     Double average = feedbackRepository.findAverageRatingByActivityId(activityId);
     return average == null ? 0.0 : average;
 }
+@Transactional(readOnly = true)
+public double getAverageRatingByOrganizer(Long organizerId) {
+
+    Double average =
+            feedbackRepository.findAverageRatingByOrganizerId(organizerId);
+
+    return average == null ? 0.0 : average;
+}
 }

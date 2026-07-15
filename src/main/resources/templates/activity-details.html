@@ -27,6 +27,32 @@
      th:text="${errorMessage}">
 </div>
 
+<div th:if="${conflictMessage}"
+     class="alert alert-warning">
+
+    <h5 class="fw-bold">Schedule Conflict Detected</h5>
+
+    <p th:text="${conflictMessage}" class="mb-3"></p>
+
+    <form th:action="@{/activities/register/{id}(id=${conflictActivityId})}"
+          method="post"
+          class="d-inline">
+
+        <input type="hidden" name="force" value="true">
+
+        <button type="submit"
+                class="btn btn-warning">
+            Register Anyway
+        </button>
+    </form>
+
+    <a th:href="@{/activities}"
+       class="btn btn-secondary ms-2">
+        Choose Another Activity
+    </a>
+
+</div>
+
     <div class="card shadow-lg border-0">
 
         <div class="card-body">
@@ -81,7 +107,7 @@
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
-
+<div th:replace="~{fragments/chatbot :: chatbot}"></div>
 </body>
 
 </html>

@@ -81,4 +81,8 @@ public class ActivityService {
 public List<Activity> getActivitiesByOrganizer(Long organizerId) {
     return activityRepository.findByOrganizerId(organizerId);
 }
+@Transactional(readOnly = true)
+public long countActivitiesByOrganizer(Long organizerId) {
+    return activityRepository.countByOrganizerId(organizerId);
+}
 }

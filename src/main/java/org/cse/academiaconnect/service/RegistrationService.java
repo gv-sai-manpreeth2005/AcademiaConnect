@@ -39,9 +39,20 @@ public class RegistrationService {
      * Create a Registration.
      * Verifies registration deadlines, duplicates, and activity capacity.
      */
-    public Registration createRegistration(Registration registration) {
-        Activity activity = activityRepository.findById(registration.getActivity().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Activity not found with ID: " + registration.getActivity().getId()));
+public Registration createRegistration(Registration registration) {
+    return createRegistration(registration, false);
+}
+
+public Registration createRegistration(
+        Registration registration,
+        boolean allowScheduleConflict) {
+
+    Activity activity = activityRepository.findById(
+            registration.getActivity().getId()
+    ).orElseThrow(() -> new EntityNotFoundException(
+            "Activity not found with ID: "
+                    + registration.getActivity().getId()
+    ));
 
         if (LocalDateTime.now().isAfter(activity.getRegistrationDeadline())) {
             throw new IllegalStateException("Registration deadline has passed for this activity");
@@ -50,8 +61,24 @@ public class RegistrationService {
         if (registrationRepository.existsByUserIdAndActivityId(registration.getUser().getId(), activity.getId())) {
             throw new IllegalArgumentException("User is already registered for this activity");
         }
+List<Registration> userRegistrations =
+        registrationRepository.findByUserId(
+                registration.getUser().getId()
+        );
 
-        long activeRegistrations = registrationRepository.countByActivityIdAndStatus(activity.getId(), Registration.RegistrationStatus.REGISTERED);
+boolean hasConflict = userRegistrations.stream()
+        .filter(existing ->
+                existing.getStatus() == Registration.RegistrationStatus.REGISTERED
+                        || existing.getStatus() == Registration.RegistrationStatus.ATTENDED
+        )
+        .anyMatch(existing ->
+                existing.getActivity()
+                        .getDateTime()
+                        .equals(activity.getDateTime())
+        );
+if (hasConflict && !allowScheduleConflict) {
+    throw new IllegalStateException("SCHEDULE_CONFLICT");
+}      long activeRegistrations = registrationRepository.countByActivityIdAndStatus(activity.getId(), Registration.RegistrationStatus.REGISTERED);
         if (activeRegistrations >= activity.getCapacity()) {
             throw new IllegalStateException("Activity capacity has been reached. Please join the waitlist instead.");
         }
@@ -179,5 +206,28 @@ public void cancelRegistration(Long registrationId, Long userId) {
 @Transactional(readOnly = true)
 public List<Registration> getRegistrationsByActivity(Long activityId) {
     return registrationRepository.findByActivityId(activityId);
+}
+
+public Registration updateAttendanceStatus(
+        Long registrationId,
+        Registration.RegistrationStatus status) {
+
+    Registration registration = getRegistrationById(registrationId);
+
+    if (status != Registration.RegistrationStatus.ATTENDED
+            && status != Registration.RegistrationStatus.ABSENT) {
+
+        throw new IllegalArgumentException(
+                "Attendance status must be ATTENDED or ABSENT."
+        );
+    }
+
+    registration.setStatus(status);
+
+    return registrationRepository.save(registration);
+}
+@Transactional(readOnly = true)
+public long countRegistrationsByOrganizer(Long organizerId) {
+    return registrationRepository.countByActivityOrganizerId(organizerId);
 }
 }

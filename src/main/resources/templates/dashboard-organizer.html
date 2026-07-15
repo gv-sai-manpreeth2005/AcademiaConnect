@@ -21,6 +21,60 @@
         Organizer Dashboard
     </h1>
 
+    <div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Total Activities</h6>
+                <h2 class="fw-bold"
+                    th:text="${totalActivities}">
+                    0
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Total Registrations</h6>
+                <h2 class="fw-bold"
+                    th:text="${totalRegistrations}">
+                    0
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Waiting Users</h6>
+                <h2 class="fw-bold"
+                    th:text="${totalWaitingUsers}">
+                    0
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Average Rating</h6>
+                <h2 class="fw-bold">
+                    <span th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">
+                        0.0
+                    </span>
+                    / 5
+                </h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
     <div class="row g-4">
 
         <div class="col-md-4">
@@ -28,8 +82,8 @@
                 <div class="card-body text-center">
                     <i class="bi bi-calendar-plus display-4 text-primary"></i>
                     <h4 class="mt-3">Create Activity</h4>
-                   <a th:href="@{/organizer/activities}"
-   class="btn btn-warning mt-2">
+                   <a th:href="@{/activities/create}"
+   class="btn btn-primary mt-2">
     Open
 </a>
                 </div>
@@ -95,6 +149,6 @@
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
-
+<div th:replace="~{fragments/chatbot :: chatbot}"></div>
 </body>
 </html>

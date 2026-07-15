@@ -41,4 +41,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
      * Search activities by location (case-insensitive partial match).
      */
     List<Activity> findByLocationContainingIgnoreCase(String location);
+
+    long countByOrganizerId(Long organizerId);
 }

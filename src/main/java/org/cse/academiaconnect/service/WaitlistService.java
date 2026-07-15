@@ -115,4 +115,11 @@ public void cancelWaitlist(Long waitlistId, Long userId) {
 public List<Waitlist> getWaitlistEntriesByActivity(Long activityId) {
     return waitlistRepository.findByActivityIdOrderByQueuePositionAsc(activityId);
 }
+@Transactional(readOnly = true)
+public long countWaitingUsersByOrganizer(Long organizerId) {
+    return waitlistRepository.countByActivityOrganizerIdAndStatus(
+            organizerId,
+            Waitlist.WaitlistStatus.WAITING
+    );
+}
 }

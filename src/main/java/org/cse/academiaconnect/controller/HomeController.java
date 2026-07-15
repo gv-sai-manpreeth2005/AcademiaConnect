@@ -21,6 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.cse.academiaconnect.entity.Feedback;
 import org.cse.academiaconnect.service.FeedbackService;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.cse.academiaconnect.service.CertificateService;
+import org.cse.academiaconnect.entity.Certificate;
 
 
 @Controller
@@ -30,19 +32,22 @@ public class HomeController {
     private final RegistrationService registrationService;
     private final WaitlistService waitlistService;
     private final FeedbackService feedbackService;
+    private final CertificateService certificateService;
 private final UserRepository userRepository;
 
-  public HomeController(
+ public HomeController(
         ActivityService activityService,
         RegistrationService registrationService,
         WaitlistService waitlistService,
         FeedbackService feedbackService,
+        CertificateService certificateService,
         UserRepository userRepository) {
 
     this.activityService = activityService;
     this.registrationService = registrationService;
     this.waitlistService = waitlistService;
     this.feedbackService = feedbackService;
+    this.certificateService = certificateService;
     this.userRepository = userRepository;
 }
 
@@ -70,10 +75,38 @@ public String activityDetails(@PathVariable Long id,
 public String userDashboard() {
     return "dashboard";
 }
-    @GetMapping("/organizer")
-    public String organizerDashboard() {
-        return "dashboard-organizer";
-    }
+@GetMapping("/organizer")
+public String organizerDashboard(
+        Model model,
+        Principal principal) {
+
+    User organizer = userRepository.findByUsername(principal.getName())
+            .orElseThrow();
+
+    Long organizerId = organizer.getId();
+
+    model.addAttribute(
+            "totalActivities",
+            activityService.countActivitiesByOrganizer(organizerId)
+    );
+
+    model.addAttribute(
+            "totalRegistrations",
+            registrationService.countRegistrationsByOrganizer(organizerId)
+    );
+
+    model.addAttribute(
+            "totalWaitingUsers",
+            waitlistService.countWaitingUsersByOrganizer(organizerId)
+    );
+
+    model.addAttribute(
+            "averageRating",
+            feedbackService.getAverageRatingByOrganizer(organizerId)
+    );
+
+    return "dashboard-organizer";
+}
 @GetMapping("/activities/create")
 public String createActivityPage(Model model) {
 
@@ -129,6 +162,7 @@ public String createActivity(
 @PostMapping("/activities/register/{id}")
 public String registerForActivity(
         @PathVariable Long id,
+        @RequestParam(defaultValue = "false") boolean force,
         Principal principal,
         RedirectAttributes redirectAttributes) {
 
@@ -147,22 +181,21 @@ public String registerForActivity(
     }
 
     if (registrationService.isActivityFull(id)) {
+
         if (waitlistService.isUserWaitlisted(user.getId(), id)) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "You are already on the waitlist for this activity."
+            );
 
-    redirectAttributes.addFlashAttribute(
-            "errorMessage",
-            "You are already on the waitlist for this activity."
-    );
-
-    return "redirect:/activities/" + id;
-}
+            return "redirect:/activities/" + id;
+        }
 
         Waitlist waitlist = new Waitlist();
         waitlist.setUser(user);
         waitlist.setActivity(activity);
 
-        Waitlist savedWaitlist =
-                waitlistService.createWaitlist(waitlist);
+        Waitlist savedWaitlist = waitlistService.createWaitlist(waitlist);
 
         redirectAttributes.addFlashAttribute(
                 "successMessage",
@@ -177,11 +210,33 @@ public String registerForActivity(
     registration.setUser(user);
     registration.setActivity(activity);
 
-    registrationService.createRegistration(registration);
+    try {
+        registrationService.createRegistration(registration, force);
+    } catch (IllegalStateException exception) {
+
+        if ("SCHEDULE_CONFLICT".equals(exception.getMessage())) {
+
+            redirectAttributes.addFlashAttribute(
+                    "conflictMessage",
+                    "You are already registered for another activity at the same date and time."
+            );
+
+            redirectAttributes.addFlashAttribute(
+                    "conflictActivityId",
+                    id
+            );
+
+            return "redirect:/activities/" + id;
+        }
+
+        throw exception;
+    }
 
     redirectAttributes.addFlashAttribute(
             "successMessage",
-            "You have successfully registered for this activity."
+            force
+                    ? "Registered successfully despite the schedule conflict."
+                    : "You have successfully registered for this activity."
     );
 
     return "redirect:/activities/" + id;
@@ -417,4 +472,129 @@ public String organizerFeedback(
     return "organizer-feedback";
 }
 
+@PostMapping("/organizer/registrations/{id}/attendance")
+public String updateAttendance(
+        @PathVariable Long id,
+        @RequestParam Registration.RegistrationStatus status,
+        Principal principal,
+        RedirectAttributes redirectAttributes) {
+
+    User organizer = userRepository.findByUsername(principal.getName())
+            .orElseThrow();
+
+    Registration registration = registrationService.getRegistrationById(id);
+
+    if (!registration.getActivity().getOrganizer().getId()
+            .equals(organizer.getId())) {
+
+        throw new IllegalArgumentException(
+                "You are not allowed to manage attendance for this activity."
+        );
+    }
+
+    registrationService.updateAttendanceStatus(id, status);
+
+    redirectAttributes.addFlashAttribute(
+            "successMessage",
+            "Attendance updated successfully."
+    );
+
+    return "redirect:/organizer/activities/"
+            + registration.getActivity().getId()
+            + "/participants";
+}
+@PostMapping("/organizer/registrations/{id}/certificate")
+public String issueCertificate(
+        @PathVariable Long id,
+        Principal principal,
+        RedirectAttributes redirectAttributes) {
+
+    User organizer = userRepository.findByUsername(principal.getName())
+            .orElseThrow();
+
+    Registration registration = registrationService.getRegistrationById(id);
+
+    if (!registration.getActivity().getOrganizer().getId()
+            .equals(organizer.getId())) {
+
+        throw new IllegalArgumentException(
+                "You are not allowed to issue a certificate for this activity."
+        );
+    }
+
+    if (registration.getStatus()
+            != Registration.RegistrationStatus.ATTENDED) {
+
+        redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "Certificate can be issued only to attended participants."
+        );
+
+        return "redirect:/organizer/activities/"
+                + registration.getActivity().getId()
+                + "/participants";
+    }
+
+    certificateService.issueCertificate(
+            registration.getUser(),
+            registration.getActivity()
+    );
+
+    redirectAttributes.addFlashAttribute(
+            "successMessage",
+            "Certificate issued successfully."
+    );
+
+    return "redirect:/organizer/activities/"
+            + registration.getActivity().getId()
+            + "/participants";
+}
+@GetMapping("/my-certificates")
+public String myCertificates(
+        Model model,
+        Principal principal) {
+
+    User user = userRepository.findByUsername(principal.getName())
+            .orElseThrow();
+
+    model.addAttribute(
+            "certificates",
+            certificateService.getCertificatesByUser(user.getId())
+    );
+
+    return "my-certificates";
+}
+@GetMapping("/certificates/{id}")
+public String viewCertificate(
+        @PathVariable Long id,
+        Model model,
+        Principal principal) {
+
+    User user = userRepository.findByUsername(principal.getName())
+            .orElseThrow();
+
+    Certificate certificate = certificateService.getCertificateById(id);
+
+    if (!certificate.getUser().getId().equals(user.getId())) {
+        throw new IllegalArgumentException(
+                "You are not allowed to view this certificate."
+        );
+    }
+
+    model.addAttribute("certificate", certificate);
+
+    return "certificate-view";
+}
+@GetMapping("/certificates/verify/{code}")
+public String verifyCertificate(
+        @PathVariable String code,
+        Model model) {
+
+    Certificate certificate =
+            certificateService.getCertificateByCode(code);
+
+    model.addAttribute("certificate", certificate);
+
+    return "certificate-verify";        
+}
 }

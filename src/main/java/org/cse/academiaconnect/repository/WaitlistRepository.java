@@ -41,4 +41,8 @@ public interface WaitlistRepository extends JpaRepository<Waitlist, Long> {
      * Find the next person in line (queue position 1 / first waiting) on the waitlist for an activity.
      */
     Optional<Waitlist> findFirstByActivityIdAndStatusOrderByQueuePositionAsc(Long activityId, Waitlist.WaitlistStatus status);
+    long countByActivityOrganizerIdAndStatus(
+        Long organizerId,
+        Waitlist.WaitlistStatus status
+);
 }
