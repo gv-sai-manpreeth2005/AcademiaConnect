@@ -40,7 +40,7 @@ public class Activity {
     private ActivityType type;
 
     @NotNull(message = "Activity date and time are required")
-    @FutureOrPresent(message = "Activity date must be in the present or future")
+    
     @Column(name = "date_time", nullable = false)
     private LocalDateTime dateTime;
 
@@ -55,7 +55,7 @@ public class Activity {
     private Integer capacity;
 
     @NotNull(message = "Registration deadline is required")
-    @FutureOrPresent(message = "Registration deadline must be in the present or future")
+   
     @Column(name = "registration_deadline", nullable = false)
     private LocalDateTime registrationDeadline;
 

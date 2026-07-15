@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-
+    
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 

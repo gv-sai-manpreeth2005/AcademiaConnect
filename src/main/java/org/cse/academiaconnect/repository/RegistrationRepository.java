@@ -43,4 +43,9 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
     long countByActivityIdAndStatus(Long activityId, Registration.RegistrationStatus status);
 
     long countByActivityOrganizerId(Long organizerId);
+
+    List<Registration> findByActivityIdAndStatusIn(
+        Long activityId,
+        List<Registration.RegistrationStatus> statuses
+);
 }

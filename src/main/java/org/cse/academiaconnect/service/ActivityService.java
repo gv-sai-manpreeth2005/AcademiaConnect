@@ -3,9 +3,14 @@ package org.cse.academiaconnect.service;
 import jakarta.persistence.EntityNotFoundException;
 import org.cse.academiaconnect.entity.Activity;
 import org.cse.academiaconnect.repository.ActivityRepository;
+import org.cse.academiaconnect.repository.RegistrationRepository;
+import org.cse.academiaconnect.repository.WaitlistRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import org.cse.academiaconnect.entity.Registration;
+import org.cse.academiaconnect.entity.Waitlist;
+    import java.util.Arrays;
 
 /**
  * Service class managing Academic Activity business logic.
@@ -16,10 +21,18 @@ import java.util.List;
 public class ActivityService {
 
     private final ActivityRepository activityRepository;
+    private final RegistrationRepository registrationRepository;
+private final WaitlistRepository waitlistRepository;
 
-    public ActivityService(ActivityRepository activityRepository) {
-        this.activityRepository = activityRepository;
-    }
+    public ActivityService(
+        ActivityRepository activityRepository,
+        RegistrationRepository registrationRepository,
+        WaitlistRepository waitlistRepository) {
+
+    this.activityRepository = activityRepository;
+    this.registrationRepository = registrationRepository;
+    this.waitlistRepository = waitlistRepository;
+}
 
     /**
      * Create a new Activity.
@@ -84,5 +97,44 @@ public List<Activity> getActivitiesByOrganizer(Long organizerId) {
 @Transactional(readOnly = true)
 public long countActivitiesByOrganizer(Long organizerId) {
     return activityRepository.countByOrganizerId(organizerId);
+}
+public void cancelActivity(Long activityId) {
+
+    Activity activity = getActivityById(activityId);
+
+    activity.setStatus(Activity.ActivityStatus.CANCELLED);
+    activityRepository.save(activity);
+
+    List<Registration> registrations =
+            registrationRepository.findByActivityIdAndStatusIn(
+                    activityId,
+                    Arrays.asList(
+                            Registration.RegistrationStatus.REGISTERED,
+                            Registration.RegistrationStatus.ATTENDED,
+                            Registration.RegistrationStatus.ABSENT
+                    )
+            );
+
+    for (Registration registration : registrations) {
+        registration.setStatus(
+                Registration.RegistrationStatus.CANCELLED
+        );
+    }
+
+    registrationRepository.saveAll(registrations);
+
+    List<Waitlist> waitlistEntries =
+            waitlistRepository.findByActivityIdAndStatus(
+                    activityId,
+                    Waitlist.WaitlistStatus.WAITING
+            );
+
+    for (Waitlist waitlist : waitlistEntries) {
+        waitlist.setStatus(
+                Waitlist.WaitlistStatus.CANCELLED
+        );
+    }
+
+    waitlistRepository.saveAll(waitlistEntries);
 }
 }

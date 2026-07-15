@@ -12,6 +12,10 @@
 <body>
 
 <div class="container py-5">
+    <div th:if="${successMessage}"
+     class="alert alert-success"
+     th:text="${successMessage}">
+</div>
 
     <h2 class="mb-4">My Organized Activities</h2>
 
@@ -47,16 +51,38 @@
 
             <td th:text="${activity.capacity}">0</td>
 
-           <td>
+          <td>
+    <a th:href="@{/organizer/activities/{id}/edit(id=${activity.id})}"
+       class="btn btn-sm btn-success me-1">
+        Edit
+    </a>
+
     <a th:href="@{/organizer/activities/{id}/participants(id=${activity.id})}"
-       class="btn btn-sm btn-warning">
+       class="btn btn-sm btn-warning me-1">
         View Participants
     </a>
 
     <a th:href="@{/organizer/activities/{id}/feedback(id=${activity.id})}"
-       class="btn btn-sm btn-info ms-1">
+       class="btn btn-sm btn-info me-1">
         View Feedback
     </a>
+
+    <form th:if="${activity.status.name() != 'CANCELLED'}"
+          th:action="@{/organizer/activities/{id}/cancel(id=${activity.id})}"
+          method="post"
+          class="d-inline">
+
+        <button type="submit"
+                class="btn btn-sm btn-danger"
+                onclick="return confirm('Cancel this activity?')">
+            Cancel
+        </button>
+    </form>
+
+    <span th:if="${activity.status.name() == 'CANCELLED'}"
+          class="badge bg-danger">
+        CANCELLED
+    </span>
 </td>
 
         </tr>
@@ -65,9 +91,9 @@
 
     </table>
 
-    <a th:href="@{/organizer}" class="btn btn-primary">
-        Back to Dashboard
-    </a>
+ <a th:href="@{/organizer}" class="btn btn-primary mt-3">
+    Back to Organizer Dashboard
+</a>
 
 </div>
 <div th:replace="~{fragments/chatbot :: chatbot}"></div>

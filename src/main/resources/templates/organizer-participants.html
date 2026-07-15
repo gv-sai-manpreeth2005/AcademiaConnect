@@ -12,10 +12,16 @@
 <body>
 
 <div class="container py-5">
+
     <div th:if="${successMessage}"
-     class="alert alert-success"
-     th:text="${successMessage}">
-</div>
+         class="alert alert-success"
+         th:text="${successMessage}">
+    </div>
+
+    <div th:if="${errorMessage}"
+         class="alert alert-danger"
+         th:text="${errorMessage}">
+    </div>
 
     <h2 class="mb-2" th:text="${activity.title}">
         Activity
@@ -143,9 +149,9 @@
     </table>
 
     <a th:href="@{/organizer/activities}"
-       class="btn btn-primary mt-3">
-        Back to Activities
-    </a>
+   class="btn btn-primary mt-3">
+    Back to Organizer Activities
+</a>
 
 </div>
 <div th:replace="~{fragments/chatbot :: chatbot}"></div>

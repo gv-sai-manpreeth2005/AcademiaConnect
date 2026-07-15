@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Create Activity | Academia Connect</title>
+    <title>Edit Activity | Academia Connect</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -14,9 +14,9 @@
 
     <h2 class="mb-4">Create New Activity</h2>
 
-    <form th:action="@{/activities/create}"
-          th:object="${activity}"
-          method="post">
+ <form th:action="@{/organizer/activities/{id}/edit(id=${activityId})}"
+      th:object="${activity}"
+      method="post">
 
    <div class="mb-3">
     <label class="form-label">
@@ -110,14 +110,13 @@
         </div>
 
         <button class="btn btn-primary">
-            Create Activity
+            Update Activity
         </button>
 
     </form>
-
-    <a th:href="@{/organizer}"
+<a th:href="@{/organizer/activities}"
    class="btn btn-secondary mt-3">
-    Back to Organizer Dashboard
+    Back to Organizer Activities
 </a>
 </div>
 

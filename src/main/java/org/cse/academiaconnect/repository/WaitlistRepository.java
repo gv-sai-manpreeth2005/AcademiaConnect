@@ -45,4 +45,8 @@ public interface WaitlistRepository extends JpaRepository<Waitlist, Long> {
         Long organizerId,
         Waitlist.WaitlistStatus status
 );
+List<Waitlist> findByActivityIdAndStatus(
+        Long activityId,
+        Waitlist.WaitlistStatus status
+);
 }

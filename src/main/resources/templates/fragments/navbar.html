@@ -1,26 +1,26 @@
-<nav class="navbar navbar-expand-lg navbar-premium sticky-top navbar-light bg-white"
-     th:fragment="navbar"
-     id="main-navbar">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm"
+     th:fragment="navbar">
 
     <div class="container">
 
-        <a class="navbar-brand" th:href="@{/}">
+        <a class="navbar-brand fw-bold"
+           th:href="@{/}">
             <i class="bi bi-mortarboard-fill"></i>
-            <span>Academia Connect</span>
+            Academia Connect
         </a>
 
-        <button class="navbar-toggler border-0"
+        <button class="navbar-toggler"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#navbarContent">
 
-            <i class="bi bi-list fs-3"></i>
-
+            <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarContent">
+        <div class="collapse navbar-collapse"
+             id="navbarContent">
 
-            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+            <ul class="navbar-nav mx-auto">
 
                 <li class="nav-item">
                     <a class="nav-link"
@@ -36,26 +36,25 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                       th:href="@{/about}">
-                        About
-                    </a>
-                </li>
+              <li class="nav-item">
+    <a class="nav-link"
+       th:href="@{/certificates/verify}">
+        Verify Certificate
+    </a>
+</li>
 
             </ul>
 
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex gap-2">
 
-                <a class="btn btn-link text-decoration-none text-dark fw-semibold p-0 px-2"
-                   th:href="@{/login}">
+                <a th:href="@{/login}"
+                   class="btn btn-outline-primary">
                     Login
                 </a>
 
-                <a class="btn btn-primary"
-                   th:href="@{/register}">
+                <a th:href="@{/register}"
+                   class="btn btn-primary">
                     Register
-                    <i class="bi bi-arrow-right"></i>
                 </a>
 
             </div>

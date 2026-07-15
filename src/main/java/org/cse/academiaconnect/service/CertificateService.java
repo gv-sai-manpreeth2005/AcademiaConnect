@@ -93,7 +93,7 @@ public Certificate issueCertificate(User user, Activity activity) {
             activity.getId())) {
 
         throw new IllegalArgumentException(
-                "Certificate has already been issued."
+                "Certificate has already been issued to this participant."
         );
     }
 
@@ -103,14 +103,19 @@ public Certificate issueCertificate(User user, Activity activity) {
     certificate.setActivity(activity);
     certificate.setIssueDate(LocalDate.now());
 
+    String certificateCode =
+            "CERT-" + UUID.randomUUID()
+                    .toString()
+                    .substring(0, 8)
+                    .toUpperCase();
+
+    certificate.setCertificateCode(certificateCode);
+
     certificate.setCredentialUrl(
-            "/certificates/verify/"
-                    + user.getId()
-                    + "-"
-                    + activity.getId()
+            "/certificates/verify/" + certificateCode
     );
 
-    return createCertificate(certificate);
+    return certificateRepository.save(certificate);
 }
 @Transactional(readOnly = true)
 public Certificate getCertificateByCode(String certificateCode) {

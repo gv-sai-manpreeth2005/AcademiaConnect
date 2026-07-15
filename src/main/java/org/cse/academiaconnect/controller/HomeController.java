@@ -171,6 +171,16 @@ public String registerForActivity(
 
     Activity activity = activityService.getActivityById(id);
 
+    if (activity.getStatus() == Activity.ActivityStatus.CANCELLED) {
+
+    redirectAttributes.addFlashAttribute(
+            "errorMessage",
+            "This activity has been cancelled. Registration is not available."
+    );
+
+    return "redirect:/activities/" + id;
+}
+
     if (registrationService.isUserRegistered(user.getId(), id)) {
         redirectAttributes.addFlashAttribute(
                 "errorMessage",
@@ -535,15 +545,23 @@ public String issueCertificate(
                 + "/participants";
     }
 
-    certificateService.issueCertificate(
-            registration.getUser(),
-            registration.getActivity()
-    );
+    try {
+        certificateService.issueCertificate(
+                registration.getUser(),
+                registration.getActivity()
+        );
 
-    redirectAttributes.addFlashAttribute(
-            "successMessage",
-            "Certificate issued successfully."
-    );
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                "Certificate issued successfully."
+        );
+    } catch (IllegalArgumentException exception) {
+
+        redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                exception.getMessage()
+        );
+    }
 
     return "redirect:/organizer/activities/"
             + registration.getActivity().getId()
@@ -585,16 +603,130 @@ public String viewCertificate(
 
     return "certificate-view";
 }
+@GetMapping("/certificates/verify")
+public String certificateVerificationPage() {
+    return "certificate-search";
+}
 @GetMapping("/certificates/verify/{code}")
 public String verifyCertificate(
         @PathVariable String code,
         Model model) {
 
-    Certificate certificate =
-            certificateService.getCertificateByCode(code);
+    try {
+        Certificate certificate =
+                certificateService.getCertificateByCode(code);
 
-    model.addAttribute("certificate", certificate);
+        model.addAttribute("certificate", certificate);
 
-    return "certificate-verify";        
+        return "certificate-verify";
+
+    } catch (jakarta.persistence.EntityNotFoundException exception) {
+
+        model.addAttribute("certificateCode", code);
+
+        return "certificate-invalid";
+    }
+}
+@GetMapping("/organizer/activities/{id}/edit")
+public String editActivityPage(
+        @PathVariable Long id,
+        Model model,
+        Principal principal) {
+
+    User organizer = userRepository.findByUsername(principal.getName())
+            .orElseThrow();
+
+    Activity activity = activityService.getActivityById(id);
+
+    if (!activity.getOrganizer().getId().equals(organizer.getId())) {
+        throw new IllegalArgumentException(
+                "You are not allowed to edit this activity."
+        );
+    }
+
+    CreateActivityRequest request = new CreateActivityRequest();
+
+    request.setTitle(activity.getTitle());
+    request.setDescription(activity.getDescription());
+    request.setLocation(activity.getLocation());
+    request.setCapacity(activity.getCapacity());
+    request.setDateTime(activity.getDateTime());
+    request.setRegistrationDeadline(activity.getRegistrationDeadline());
+    request.setType(activity.getType().name());
+    request.setStatus(activity.getStatus().name());
+
+    model.addAttribute("activity", request);
+    model.addAttribute("activityId", id);
+
+    return "edit-activity";
+}
+
+@PostMapping("/organizer/activities/{id}/edit")
+public String updateActivity(
+        @PathVariable Long id,
+        @Valid @ModelAttribute("activity") CreateActivityRequest request,
+        Principal principal,
+        RedirectAttributes redirectAttributes) {
+
+    User organizer = userRepository.findByUsername(principal.getName())
+            .orElseThrow();
+
+    Activity existingActivity = activityService.getActivityById(id);
+
+    if (!existingActivity.getOrganizer().getId().equals(organizer.getId())) {
+        throw new IllegalArgumentException(
+                "You are not allowed to edit this activity."
+        );
+    }
+
+    Activity updatedActivity = new Activity();
+
+    updatedActivity.setTitle(request.getTitle());
+    updatedActivity.setDescription(request.getDescription());
+    updatedActivity.setLocation(request.getLocation());
+    updatedActivity.setCapacity(request.getCapacity());
+    updatedActivity.setDateTime(request.getDateTime());
+    updatedActivity.setRegistrationDeadline(request.getRegistrationDeadline());
+    updatedActivity.setType(
+            Activity.ActivityType.valueOf(request.getType())
+    );
+    updatedActivity.setStatus(
+            Activity.ActivityStatus.valueOf(request.getStatus())
+    );
+
+    activityService.updateActivity(id, updatedActivity);
+
+    redirectAttributes.addFlashAttribute(
+            "successMessage",
+            "Activity updated successfully."
+    );
+
+    return "redirect:/organizer/activities";
+}
+@PostMapping("/organizer/activities/{id}/cancel")
+public String cancelActivity(
+        @PathVariable Long id,
+        Principal principal,
+        RedirectAttributes redirectAttributes) {
+
+    User organizer = userRepository.findByUsername(principal.getName())
+            .orElseThrow();
+
+    Activity activity = activityService.getActivityById(id);
+
+    if (!activity.getOrganizer().getId().equals(organizer.getId())) {
+        throw new IllegalArgumentException(
+                "You are not allowed to cancel this activity."
+        );
+    }
+
+   activityService.cancelActivity(id);
+
+    redirectAttributes.addFlashAttribute(
+            "successMessage",
+            "Activity cancelled successfully."
+    );
+
+    return "redirect:/organizer/activities";
 }
 }
