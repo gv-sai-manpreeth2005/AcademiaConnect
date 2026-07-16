@@ -268,179 +268,183 @@
                             </div>
 
                             <!-- DEPARTMENT -->
-                            <div class="col-md-6">
+                          <div class="row g-4">
 
-                                <label for="department"
-                                       class="form-label">
-                                    Department
-                                </label>
+    <!-- Department -->
+    <div class="col-md-6">
 
-                                <div class="auth-select-group">
+        <label for="department" class="form-label">
+            Department
+            <span class="text-danger">*</span>
+        </label>
 
-                                    <i class="bi bi-building"></i>
+        <div class="auth-select-group">
 
-                                    <select id="department"
-                                            class="form-select"
-                                            th:field="*{department}"
-                                            required>
+            <i class="bi bi-building"></i>
 
-                                        <option value="">
-                                            Select Department
-                                        </option>
+            <select id="department"
+                    class="form-select"
+                    th:field="*{department}"
+                    required>
 
-                                        <option value="Computer Science">
-                                            Computer Science
-                                        </option>
+                <option value="">Select Department</option>
 
-                                        <option value="Information Technology">
-                                            Information Technology
-                                        </option>
+                <option value="COMPUTER_SCIENCE_ENGINEERING">
+                    Computer Science and Engineering
+                </option>
 
-                                        <option value="Electronics">
-                                            Electronics
-                                        </option>
+                <option value="INFORMATION_TECHNOLOGY">
+                    Information Technology
+                </option>
 
-                                        <option value="Mechanical">
-                                            Mechanical
-                                        </option>
+                <option value="ARTIFICIAL_INTELLIGENCE">
+                    Artificial Intelligence
+                </option>
 
-                                        <option value="Civil">
-                                            Civil
-                                        </option>
+                <option value="DATA_SCIENCE">
+                    Data Science
+                </option>
 
-                                        <option value="Business Administration">
-                                            Business Administration
-                                        </option>
+                <option value="CYBER_SECURITY">
+                    Cyber Security
+                </option>
 
-                                    </select>
+                <option value="ELECTRONICS_COMMUNICATION_ENGINEERING">
+                    Electronics and Communication Engineering
+                </option>
 
-                                </div>
+                <option value="ELECTRICAL_ENGINEERING">
+                    Electrical Engineering
+                </option>
 
-                                <div class="auth-field-error"
-                                     th:if="${#fields.hasErrors('department')}"
-                                     th:errors="*{department}">
-                                </div>
+                <option value="MECHANICAL_ENGINEERING">
+                    Mechanical Engineering
+                </option>
 
-                            </div>
+                <option value="CIVIL_ENGINEERING">
+                    Civil Engineering
+                </option>
 
-                            <!-- ROLE -->
-                            <div class="col-md-6">
+                <option value="CHEMICAL_ENGINEERING">
+                    Chemical Engineering
+                </option>
 
-                                <label for="role"
-                                       class="form-label">
-                                    Account Role
-                                </label>
+                <option value="BIOTECHNOLOGY">
+                    Biotechnology
+                </option>
 
-                                <div class="auth-select-group">
+                <option value="AEROSPACE_ENGINEERING">
+                    Aerospace Engineering
+                </option>
 
-                                    <i class="bi bi-person-badge"></i>
+                <option value="ROBOTICS_AUTOMATION">
+                    Robotics and Automation
+                </option>
 
-                                    <select id="role"
-                                            class="form-select"
-                                            th:field="*{role}"
-                                            required>
+                <option value="BUSINESS_ADMINISTRATION">
+                    Business Administration
+                </option>
 
-                                        <option value="">
-                                            Select Role
-                                        </option>
+                <option value="COMMERCE">
+                    Commerce
+                </option>
 
-                                        <option value="USER">
-                                            Student / User
-                                        </option>
+                <option value="MATHEMATICS">
+                    Mathematics
+                </option>
 
-                                        <option value="ORGANIZER">
-                                            Organizer
-                                        </option>
+                <option value="PHYSICS">
+                    Physics
+                </option>
 
-                                    </select>
+                <option value="CHEMISTRY">
+                    Chemistry
+                </option>
 
-                                </div>
+                <option value="OTHER">
+                    Other
+                </option>
 
-                                <small class="auth-help-text">
-                                    Choose the role matching how you will use the platform.
-                                </small>
+            </select>
 
-                                <div class="auth-field-error"
-                                     th:if="${#fields.hasErrors('role')}"
-                                     th:errors="*{role}">
-                                </div>
+        </div>
 
-                            </div>
+    </div>
 
-                            <!-- PASSWORD -->
-                            <div class="col-md-6">
+    <!-- Account Role -->
+    <div class="col-md-6">
 
-                                <label for="password"
-                                       class="form-label">
-                                    Password
-                                </label>
+        <label for="role" class="form-label">
+            Account Role
+            <span class="text-danger">*</span>
+        </label>
 
-                                <div class="auth-input-group">
+        <div class="auth-select-group">
 
-                                    <i class="bi bi-lock"></i>
+            <i class="bi bi-person-badge"></i>
 
-                                    <input type="password"
-                                           id="password"
-                                           class="form-control"
-                                           th:field="*{password}"
-                                           placeholder="Create a password"
-                                           autocomplete="new-password"
-                                           required>
+            <select id="role"
+                    class="form-select"
+                    th:field="*{role}"
+                    required>
 
-                                    <button type="button"
-                                            class="auth-password-toggle"
-                                            id="togglePassword"
-                                            aria-label="Show password">
+                <option value="">Select Account Role</option>
+                <option value="USER">User</option>
+                <option value="ORGANIZER">Organizer</option>
 
-                                        <i class="bi bi-eye"
-                                           id="passwordIcon"></i>
+            </select>
 
-                                    </button>
+        </div>
 
-                                </div>
+    </div>
 
-                                <small class="auth-help-text">
-                                    Password must contain at least 8 characters.
-                                </small>
+    <!-- Password -->
+    <div class="col-md-6">
 
-                                <div class="auth-field-error"
-                                     th:if="${#fields.hasErrors('password')}"
-                                     th:errors="*{password}">
-                                </div>
+        <label for="password" class="form-label">
+            Password
+            <span class="text-danger">*</span>
+        </label>
 
-                            </div>
+        <div class="auth-input-group">
 
-                            <!-- CONFIRM PASSWORD -->
-                            <div class="col-md-6">
+            <i class="bi bi-lock"></i>
 
-                                <label for="confirmPassword"
-                                       class="form-label">
-                                    Confirm Password
-                                </label>
+            <input id="password"
+                   type="password"
+                   class="form-control"
+                   th:field="*{password}"
+                   placeholder="Enter password"
+                   required>
 
-                                <div class="auth-input-group">
+        </div>
 
-                                    <i class="bi bi-shield-lock"></i>
+    </div>
 
-                                    <input type="password"
-                                           id="confirmPassword"
-                                           class="form-control"
-                                           th:field="*{confirmPassword}"
-                                           placeholder="Re-enter your password"
-                                           autocomplete="new-password"
-                                           required>
+    <!-- Confirm Password -->
+    <div class="col-md-6">
 
-                                    <button type="button"
-                                            class="auth-password-toggle"
-                                            id="toggleConfirmPassword"
-                                            aria-label="Show confirm password">
+        <label for="confirmPassword" class="form-label">
+            Confirm Password
+            <span class="text-danger">*</span>
+        </label>
 
-                                        <i class="bi bi-eye"
-                                           id="confirmPasswordIcon"></i>
+        <div class="auth-input-group">
 
-                                    </button>
+            <i class="bi bi-shield-lock"></i>
 
-                                </div>
+            <input id="confirmPassword"
+                   type="password"
+                   class="form-control"
+                   th:field="*{confirmPassword}"
+                   placeholder="Confirm password"
+                   required>
+
+        </div>
+
+    </div>
+
+</div>
 
                                 <div class="auth-field-error"
                                      th:if="${#fields.hasErrors('confirmPassword')}"

@@ -81,9 +81,7 @@ private String password;
     @Builder.Default
     private List<Certificate> certificates = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<AchievementBadge> badges = new ArrayList<>();
+    
 
     @PrePersist
     protected void onCreate() {

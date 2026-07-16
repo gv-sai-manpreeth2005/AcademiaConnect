@@ -1,61 +1,144 @@
-<footer th:fragment="footer" class="footer-section">
-        <div class="container">
-            <div class="row g-5">
-                <div class="col-lg-4">
-                    <a class="navbar-brand text-dark mb-3 d-inline-flex" href="#">
+<footer th:fragment="footer" class="academia-footer">
+
+    <div class="container">
+
+        <div class="row g-5">
+
+            <div class="col-lg-5">
+
+                <a class="academia-footer-brand"
+                   th:href="@{/}">
+
+                    <span class="academia-footer-brand-icon">
                         <i class="bi bi-mortarboard-fill"></i>
-                        <span>Academia Connect</span>
-                    </a>
-                    <p class="text-muted small mt-2">
-                        Academia Connect is a modern academic event management platform that enables organizers to create and manage events while allowing users to discover activities, register, earn certificates, and track achievements.
-                    </p>
-                    <div class="social-links mt-4">
-                        <a href="#" class="social-btn" aria-label="Github"><i class="bi bi-github"></i></a>
-                        <a href="#" class="social-btn" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
-                        <a href="#" class="social-btn" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-                    </div>
+                    </span>
+
+                    <span>Academia Connect</span>
+
+                </a>
+
+                <p class="academia-footer-description">
+                    Academia Connect is a smart academic activity management
+                    platform for discovering activities, managing registrations,
+                    tracking attendance, collecting feedback and issuing
+                    verifiable certificates.
+                </p>
+
+                <div class="academia-footer-badge">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    <span>
+                        Secure academic activity and certificate management
+                    </span>
+
                 </div>
-                
-                <div class="col-6 col-md-3 col-lg-2 offset-lg-2">
-                    <div class="footer-link-group">
-                        <h5>Product</h5>
-                        <ul class="footer-links">
-                            <li><a href="#features">Features</a></li>
-                            <li><a href="#activities">Activities Calendar</a></li>
-                            <li><a href="#">Security Hash Verification</a></li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="col-6 col-md-3 col-lg-2">
-                    <div class="footer-link-group">
-                        <h5>Resources</h5>
-                        <ul class="footer-links">
-                            <li><a href="#">Department Guides</a></li>
-                            <li><a href="#">Student Helpdesk</a></li>
-                            <li><a href="#">API Developer Portal</a></li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="col-6 col-md-3 col-lg-2">
-                    <div class="footer-link-group">
-                        <h5>University</h5>
-                        <ul class="footer-links">
-                            <li><a href="#">Campus Maps</a></li>
-                            <li><a href="#">Main Directory</a></li>
-                            <li><a href="#">Admissions Office</a></li>
-                        </ul>
-                    </div>
-                </div>
+
             </div>
-            
-            <div class="footer-bottom d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
-                <p class="mb-0">&copy; 2026 Academia Connect - Smart Academic Activity Management System. All rights reserved.</p>
-                <div class="d-flex gap-4">
-                    <a href="#" class="text-decoration-none text-muted small">Terms of Service</a>
-                    <a href="#" class="text-decoration-none text-muted small">Privacy Policy</a>
+
+            <div class="col-6 col-md-4 col-lg-2 offset-lg-1">
+
+                <div class="academia-footer-group">
+
+                    <h5>Explore</h5>
+
+                    <ul>
+
+                        <li>
+                            <a th:href="@{/}">
+                                Home
+                            </a>
+                        </li>
+
+                        <li>
+                            <a th:href="@{/activities}">
+                                Browse Activities
+                            </a>
+                        </li>
+
+                        <li>
+                            <a th:href="@{/certificates/verify}">
+                                Verify Certificate
+                            </a>
+                        </li>
+
+                    </ul>
+
                 </div>
+
             </div>
+
+            <div class="col-6 col-md-4 col-lg-2">
+
+                <div class="academia-footer-group">
+
+                    <h5>Account</h5>
+
+                    <ul>
+
+                        <li>
+                            <a th:href="@{/login}">
+                                Login
+                            </a>
+                        </li>
+
+                        <li>
+                            <a th:href="@{/register}">
+                                Register
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="col-12 col-md-4 col-lg-2">
+
+                <div class="academia-footer-group">
+
+                    <h5>Platform</h5>
+
+                    <ul>
+
+                        <li>
+                            <span>Activity Registration</span>
+                        </li>
+
+                        <li>
+                            <span>Attendance Tracking</span>
+                        </li>
+
+                        <li>
+                            <span>Digital Certificates</span>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
         </div>
-    </footer>
+
+        <div class="academia-footer-bottom">
+
+            <p>
+                &copy; 2026 Academia Connect. Smart Academic Activity Management System.
+            </p>
+
+            <div>
+
+                <span>
+                    <i class="bi bi-code-slash"></i>
+                    Built for academic activity management
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>

@@ -179,21 +179,37 @@
 
                             </div>
 
-                            <div class="activity-information-item">
+                        <div class="activity-information-item">
 
-                                <div class="activity-information-icon">
-                                    <i class="bi bi-calendar3"></i>
-                                </div>
+    <div class="activity-information-icon">
+        <i class="bi bi-calendar3"></i>
+    </div>
 
-                                <div>
-                                    <small>Date and Time</small>
+    <div>
+        <small>Date and Time</small>
 
-                                    <strong th:text="${activity.dateTime}">
-                                        Activity Date
-                                    </strong>
-                                </div>
+        <strong th:text="${#temporals.format(
+                activity.dateTime,
+                'dd MMMM yyyy'
+            )}">
+            20 July 2026
+        </strong>
 
-                            </div>
+        <span class="activity-display-time">
+
+            <i class="bi bi-clock"></i>
+
+            <span th:text="${#temporals.format(
+                    activity.dateTime,
+                    'hh:mm a'
+                )}">
+                10:30 AM
+            </span>
+
+        </span>
+    </div>
+
+</div>
 
                             <div class="activity-information-item">
 

@@ -154,7 +154,7 @@ public String createActivity(
 
     activityService.createActivity(activity);
 
-    return "redirect:/activities";
+    return "redirect:/organizer/activities";
 }
 
 
